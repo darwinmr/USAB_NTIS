@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>USA Baseball</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        html, body { height: 100%; margin: 0; }
+        #map { width: 100%; height: calc(100vh - 56px);}
+        
+        .region-images {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .region-images img {
+        max-width: 100%; 
+        height: auto; 
+        width: 165px; 
+        margin-bottom: 10px; 
+    }
+
+    .marker-color-blue {
+    color: lightskyblue;
+    }
+
+    .col-md-9 {
+    position: relative;
+}
+    .bottom-right-image {
+    position: absolute;
+    bottom: 10px; 
+    right: 10px; 
+    width: 100px; 
+    height: auto;
+    z-index: 1000; 
+}
+    
+    </style>
+
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+</head>
+<body>
+    </div>
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="https://www.usabaseball.com/events/national-team-identification-series/about" target="_blank">USA Baseball: NTIS Try-Out Locations</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+              </li>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 px-0">
+                <div class="bg-light py-4">
+                    <h5 class="text-center">Try-Out Locater</h5>
+                    <p class="text-center">Find the nearest try-out location in your region: First, click on your region below. Then, view the locations available. When you find one that you are able to reach, click on the map pin to view more information about the location and date. If you have any questions, feel free to reach out to the Regional Directors and find more details on the region's website.</p>
+                </div>
+                <div class="bg-light py-4">
+                    <h5 class="text-center">Regions</h5>
+                    <div class="region-images">
+                        <img src="assets/images/4x/Asset 2@4x.png" id="region1">
+                        <img src="assets/images/4x/Asset 3@4x.png" id="region2">
+                        <img src="assets/images/4x/Asset 4@4x.png" id="region3">
+                        <img src="assets/images/4x/Asset 5@4x.png" id="region4">
+                        <img src="assets/images/4x/Asset 6@4x.png" id="region5">
+                        <img src="assets/images/4x/Asset 7@4x.png" id="region6">
+                    </div>
+                <div class="bg-light py-4">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 px-0 position-relative">
+                <div id="map"></div>
+                <img src="assets/images/USA-BAseballNTIS-logo-300x263.png" class="bottom-right-image">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.0/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+    <script>
+        var mymap = L.map('map').setView([37.0902, -95.7129], 4);
+        mymap.setMinZoom(3);
+
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
+
+        function getColor(Region) {
+            switch (Region) {
+                case 'SouthEast': return '#262626';
+                case 'SouthWest': return '#880B1F'
+                case 'NorthWest': return '#0C2340';
+                case 'MidWest': return '#184A7F';
+                case 'NorthEast': return '#C8102E';
+                case 'South': return '#ADADAD';
+            }
+        }
+        L.geoJson.ajax("assets/us-states.geojson", {
+            style: function (feature) {
+                return {
+                    fillColor: getColor(feature.properties.Region),
+                    opacity: 1,
+                    color: 'white',
+                    dashArray: '1',
+                    fillOpacity: 1
+                };
+            }
+        }).addTo(mymap);
+
+        L.geoJson.ajax("assets/USABLocation.geojson", {
+    onEachFeature: function (feature, layer) {
+        layer.bindPopup("Location: " + feature.properties.Location);
+    },
+    pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {
+            icon: L.icon({
+                className: 'fa-solid fa-map-pin marker-color-blue',
+                iconSize: [60, 42],
+                iconAnchor: [15, 42], 
+                popupAnchor: [0, -40], 
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+                shadowSize: [60, 60], 
+                shadowAnchor: [13, 41]
+            })
+        });
+    },
+    attribution: 'USA Baseball NTIS 2023 Try-Out Locations| Base Map &copy; CartoDB | Map Author: Miranda Darwin'
+}).addTo(mymap);
+        document.addEventListener('DOMContentLoaded', function() {
+    const regionCoordinates = {
+        region1: [41.637072, -74.530668], 
+        region2: [33.170975, -83.275785], 
+        region3: [33.830579, -96.371488], 
+        region4: [37.016886, -109.203520], 
+        region5: [45.481329, -116.213415], 
+        region6: [42.150784, -90.437757], 
+    };
+
+    const columnContent = document.querySelector('.col-md-3');
+    const originalContent = columnContent.innerHTML;
+
+    let markers = [];
+
+    function addClickListenerToImages() {
+        const regionImages = document.querySelectorAll('.region-images img');
+        regionImages.forEach(image => {
+            image.addEventListener('click', function() {
+                const imageId = this.id;
+                const coordinates = regionCoordinates[imageId];
+
+                fetch(`assets/USABLocation.geojson`)
+                    .then(response => response.json())
+                    .then(data => {
+                        markers = []; 
+                        L.geoJson(data, {
+                            onEachFeature: function (feature, layer) {
+                                layer.bindPopup(feature.properties.Location + ".........." + feature.properties.Date);
+                            },
+                            pointToLayer: function (feature, latlng) {
+                                const marker = L.marker(latlng, { icon: L.divIcon({ className: 'fa-solid fa-map-pin marker-color-blue' }) });
+                                markers.push(marker); 
+                                return marker;
+                            }
+                        }).addTo(mymap);
+
+                    });
+
+                if (coordinates) {
+                    mymap.setView(coordinates, 5); 
+                    const imageId = this.id;
+                    const regionInfo = {
+    region1: {
+        director: 'Jeff Schaefer',
+        email: 'jeff@usabaseballntis.com',
+        website: 'https://ntisnortheast.leagueapps.com/'
+    },
+    region2: {
+        director: 'Jeff Schaefer',
+        email: 'jeff@usabaseballntis.com',
+        website: 'https://ntissoutheast.leagueapps.com/'
+    },
+    region3: {
+        director: 'Juan Fontela',
+        email: 'juan@usabaseballntis.com',
+        website: 'https://ntissouth.leagueapps.com/events'
+    },
+    region4: {
+        director: 'Juan Fontela',
+        email: 'juan@usabaseballntis.com',
+        website: 'https://ntissouthwest.leagueapps.com/events'
+    },
+    region5: {
+        director: 'Jason Sekany',
+        email: 'jason@usabaseballntis.com',
+        website: 'https://ntisnorthwest.leagueapps.com/events'
+    },
+    region6: {
+        director: 'Rich Janor',
+        email: 'rich@usabaseballntis.com',
+        website: 'https://ntismidwest.leagueapps.com/events'
+    }
+};
+const newContent = `
+    <div class="bg-light py-4">
+        <h5 class="text-center">Region Information</h5>
+        <ul class="list-group mt-4">
+            <li class="list-group-item">Director: ${regionInfo[imageId].director}</li>
+            <li class="list-group-item">Email: ${regionInfo[imageId].email}</li>
+            <li class="list-group-item">Website: <a href="${regionInfo[imageId].website}" target="_blank">${regionInfo[imageId].website}</a></li>
+        </ul>
+        <button class="btn btn-primary back-btn mt-3">Back to Map</button>
+    </div>`;
+                    columnContent.innerHTML = newContent;
+                    const backButton = document.querySelector('.back-btn');
+                    backButton.addEventListener('click', function() {
+                        markers.forEach(marker => {
+                            mymap.removeLayer(marker);
+                        });
+                        columnContent.innerHTML = originalContent;
+                        mymap.setView([37.0902, -95.7129], 4);
+                        addClickListenerToImages();
+                    });
+                }
+            });
+        });
+    }
+
+    addClickListenerToImages();
+});
+
+</script>
+
+        L.geoJson.ajax("assets/us-states.geojson").addTo(mymap);
+        L.control.scale({ position: 'bottomleft' }).addTo(mymap);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
